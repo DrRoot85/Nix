@@ -22,7 +22,10 @@ inputs = {
   programs.hyprland.package = input.hyprland.packages."${pkg.system}".hyprland;
 }
 
-
+### Home-Manager
+#NixOS Optin
+environment.systemPackages = [ pkgs.home-manager];
+###
 
 #######MOunt HDD
 ########### blkid /dev/sda1
