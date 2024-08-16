@@ -2,7 +2,11 @@
 #####
 To Start Learn:
 https://www.youtube.com/watch?v=S3VBi6kHw5c
-
+### For Ruby
+https://github.com/inscapist/ruby-nix
+###
+for Others
+https://github.com/the-nix-way/nix-flake-dev-environments
 ##############3
 imports = [
   <nixos-hardware/lenovo/thinkpad/p50>
