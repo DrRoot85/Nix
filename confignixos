@@ -24,6 +24,35 @@ inputs = {
 
 
 
+#######MOunt HDD
+########### blkid /dev/sda1
+
+{ config, pkgs, ... }:
+
+{
+  # Other configurations...
+
+  fileSystems."/home/DrRoot/HDD" = {
+    device = "/dev/disk/by-uuid/your-uuid-here"; # Replace with your UUID
+    fsType = "xfs";
+    mountPoint = "/home/DrRoot/HDD";
+  };
+
+  # Other configurations...
+}
+
+###after type
+df -h
+lsblk
+##// for firefox 
+to extract tar -xzvf firefox-profile.tar.gz 
+
+#to select profle 
+firefox -p
+## cpj2dfkr.default-release ##
+
+#######################
+
 
 programs.hyprland.enable = true;
 
