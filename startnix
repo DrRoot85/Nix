@@ -1,0 +1,25 @@
+
+
+
+nix-channel --add http://nixos.org/channels/nixpkgs-unstable
+
+nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz home-manager
+
+sudo nix-channel --add https://github.com/NixOS/nixos-hardware/archive/master.tar.gz nixos-hardware
+
+
+nix-channel --update
+nixos-rebuild switch --upgrade-all
+
+
+
+nix-shell '<home-manager>' -A install
+
+
+
+######
+# If you do not plan on having Home Manager manage your shell configuration then you must source the
+$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
+
+
+

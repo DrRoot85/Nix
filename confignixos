@@ -1,0 +1,379 @@
+
+
+
+imports = [
+  <nixos-hardware/lenovo/thinkpad/p50>
+  ./hardware-configuration.nix
+];
+
+
+
+# allowUnfree = true;
+# allowBroken = true;
+# allowUnsupportedSystem = true;
+# allowUnfreePredicate = (pkg: false);
+
+#  permittedInsecurePackages = [ "openssl-1.1.1w",  "webkitgtk-2.4.11" ];
+
+#  nixpkgs.config.permittedInsecurePackages = [ "openssl-1.1.1w" ];
+
+# PKGS
+# stremio
+# sublimetext4
+#
+# openssl_1_1
+#
+#
+#
+#
+
+
+
+  # On NixOS 24.05 or older, this option must be set:
+  #sound.enable = false;
+
+  # rtkit is optional but recommended
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
+  };
+
+    services.pipewire.wireplumber.configPackages = [
+    (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/10-bluez.conf" ''
+      monitor.bluez.properties = {
+        bluez5.enable-sbc-xq = true
+        bluez5.enable-msbc = true
+        bluez5.enable-hw-volume = true
+        bluez5.headset-roles = [hsp_hs hsp_ag hfp_hf hfp_ag]
+      }
+    '')
+  ];
+
+services.xserver.windowManager.dwm = {
+  enable = true;
+  package = pkgs.dwm.overrideAttrs {
+    src = /home/DrRoot/.config/dwm;
+  };
+};
+
+
+
+
+## check { config, lib, pkgs, makeDestopItem, fetchurl, ... }:
+
+# Enable OpenGL
+  hardware.opengl = {
+    enable = true;
+  };
+
+ opengl = {
+   driSupport = true;
+   driSupport32Bit = true;
+ };
+
+  # Load nvidia driver for Xorg and Wayland
+  services.xserver.videoDrivers = ["nvidia" "modesetting" ];
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  boot.initrd.availableKernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
+
+    system.nixos.tags = [ "with-nvidia" ];
+    system.nixos.label = "nVidia";
+
+
+ i18n.extraLocaleSettings = {
+    LC_ADDRESS = "en_NZ.UTF-8";
+    LC_IDENTIFICATION = "en_NZ.UTF-8";
+    LC_MEASUREMENT = "en_NZ.UTF-8";
+    LC_MONETARY = "en_NZ.UTF-8";
+    LC_NAME = "en_NZ.UTF-8";
+    LC_NUMERIC = "en_NZ.UTF-8";
+    LC_PAPER = "en_NZ.UTF-8";
+    LC_TELEPHONE = "en_NZ.UTF-8";
+    LC_TIME = "en_NZ.UTF-8";
+  };
+
+    services.picom.enable = true;
+    services.printing.enable = true;
+    services.udisks2.enable = true;
+
+    programs.xfconf.enable = true;
+  	programs.thunar.plugins = with pkgs.xfce; [
+  		thunar-archive-plugin
+  		thunar-volman
+		];
+
+##
+ xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    # gtk portal needed to make gtk apps happy
+    extraPortals = [ 
+      pkgs.xdg-desktop-portal-wlr
+      pkgs.xdg-desktop-portal-gtk 
+    ];
+  };
+
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
+
+    services.xserver.displayManager.autoLogin.enable = true;
+  services.xserver.displayManager.autoLogin.user = "DrRoot";
+  services.xserver.displayManager.defaultSession = "none+dwm";
+  services.xserver.displayManager.startx.enable = true;
+  services.xserver.windowManager.dwm.enable = true;
+##
+services.xserver.xkb = {
+layout = "us,ara";
+variant = "";
+options = "grp:win_space_toggle";
+##
+    extraGroups = [ "networkmanager" "wheel" "audio" "video" "storage" "media" "input" "audio" ];
+##
+
+  hardware.nvidia = {
+
+    # Modesetting is required.
+    modesetting.enable = true;
+
+    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
+    # Enable this if you have graphical corruption issues or application crashes after waking
+    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead 
+    # of just the bare essentials.
+    powerManagement.enable = false;
+
+    # Fine-grained power management. Turns off GPU when not in use.
+    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
+    powerManagement.finegrained = false;
+
+    # Use the NVidia open source kernel module (not to be confused with the
+    # independent third-party "nouveau" open source driver).
+    # Support is limited to the Turing and later architectures. Full list of 
+    # supported GPUs is at: 
+    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
+    # Only available from driver 515.43.04+
+    # Currently alpha-quality/buggy, so false is currently the recommended setting.
+    open = false;
+
+    # Enable the Nvidia settings menu,
+	# accessible via `nvidia-settings`.
+    nvidiaSettings = true;
+
+    # Optionally, you may need to select the appropriate driver version for your specific GPU.
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
+
+    # xrandr --listproviders
+    # lspci| grep -E 'VGA|3D'
+
+    optimus_prime = {
+      enable = true;
+      nvidiaBusId = "PCI:1:0:0";
+      intelBusId = "PCI:0:02:0";
+      };
+
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+    nix = {
+    settings = {
+      warn-dirty = false;
+      experimental-features = "nix-command flakes";
+      auto-optimise-store = true;
+      substituters = ["https://nix-gaming.cachix.org"];
+      trusted-public-keys = ["nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="];
+    };
+
+  };
+
+  nixpkgs = {
+    config = {
+      allowUnfree = true;
+      allowUnfreePredicate = pkg: builtins.elem (builtins.parseDrvName pkg.name).name ["steam"];
+
+      permittedInsecurePackages = [
+          "openssl-1.1.1v"
+          "python-2.7.18.7"
+      ];
+    };
+  };
+
+
+
+
+
+  virtualisation.libvirtd.enable = true;
+
+    xdg.portal = {
+    enable = true;
+    config.common.default = "*";
+    extraPortals = [pkgs.xdg-desktop-portal-gtk];
+  };
+
+    security.polkit.enable = true;
+
+      systemd = {
+    user.services.polkit-gnome-authentication-agent-1 = {
+      description = "polkit-gnome-authentication-agent-1";
+      wantedBy = ["graphical-session.target"];
+      wants = ["graphical-session.target"];
+      after = ["graphical-session.target"];
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+        Restart = "on-failure";
+        RestartSec = 1;
+        TimeoutStopSec = 10;
+      };
+    };
+
+
+
+
+
+fonts = {
+    packages = with pkgs; [
+      noto-fonts
+      noto-fonts-cjk
+      noto-fonts-emoji
+      font-awesome
+      source-han-sans
+      source-han-sans-japanese
+      source-han-serif-japanese
+      (nerdfonts.override {fonts = ["Meslo"];})
+    ];
+    fontconfig = {
+      enable = true;
+      defaultFonts = {
+        monospace = ["Meslo LG M Regular Nerd Font Complete Mono"];
+        serif = ["Noto Serif" "Source Han Serif"];
+        sansSerif = ["Noto Sans" "Source Han Sans"];
+      };
+    };
+
+
+
+
+
+
+
+
+
+ packages = with pkgs; [
+      firefox
+      dwm
+      dmenu
+      dunst
+      slstatus
+      slock
+      st
+      stdenv
+      cmake
+      ncmpcpp
+      alacritty
+      feh
+      freetype
+      ffmpeg
+      gd
+      gnumake
+      gvfs
+      gnome.gnome-disk-utility
+      geany
+      pavucontrol
+      picom
+      polkit_gnome
+      unzip
+      xclip
+      xorg.libX11
+      xorg.libX11.dev
+      xorg.libxcb
+      xorg.libXft
+      xorg.libXinerama
+      xorg.xinit
+      xorg.xinput
+      xfce.thunar
+      easytag
+      git
+      harfbuzz
+      eza
+      maim
+      mpd
+      mpc-cli
+      ncmpcpp
+      oh-my-zsh
+      fira-code-nerdfont
+      zsh
+      zsh-autosuggestions
+      zsh-syntax-highlighting
+      papirus-icon-theme
+      materia-kde-theme
+      wireplumber
+      neofetch
+      mpdscribble
+      ntfs3g
+      font-manager
+    #  thunderbird
+    ];
+
+
+
+
+
+
+        nixpkgs.overlays = [
+	(final: prev: {
+		dwm = prev.dwm.overrideAttrs (old: { src = /home/dobbie/Suckless/dwm ;});
+	})
+	(final: prev: {
+		dmenu = prev.dmenu.overrideAttrs (old: { src = /home/dobbie/Suckless/dmenu ;});
+	})
+	(final: prev: {
+		slstatus = prev.slstatus.overrideAttrs (old: { src = /home/dobbie/Suckless/slstatus ;});
+	})
+	(final: prev: {
+		slock = prev.slock.overrideAttrs (old: { src = /home/dobbie/Suckless/slock ;});
+	})
+  ];
+
+
+
+
+
+
+
+  fonts = {                                                  #This is depricated new sytax will
+    fonts = with pkgs; [                                   #be enforced in the next realease
+      noto-fonts
+      noto-fonts-cjk
+      noto-fonts-emoji
+      font-awesome
+      source-han-sans
+      source-han-sans-japanese
+      source-han-serif-japanese
+      (nerdfonts.override { fonts = [ "Meslo" ]; })
+    ];
+    fontconfig = {
+      enable = true;
+      defaultFonts = {
+	      monospace = [ "Meslo LG M Regular Nerd Font Complete Mono" ];
+	      serif = [ "Noto Serif" "Source Han Serif" ];
+	      sansSerif = [ "Noto Sans" "Source Han Sans" ];
+      };
+    };
+    };
