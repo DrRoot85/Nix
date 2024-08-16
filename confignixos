@@ -8,6 +8,16 @@ imports = [
 
 
 
+inputs = {
+  hyprland.url = "github:hyprwm/Hyprland";
+  programs.hyprland.package = input.hyprland.packages."${pkg.system}".hyprland;
+}
+
+
+
+
+programs.hyprland.enable = true;
+
 # allowUnfree = true;
 # allowBroken = true;
 # allowUnsupportedSystem = true;
@@ -64,7 +74,7 @@ services.xserver.windowManager.dwm = {
 
 
 
-## check { config, lib, pkgs, makeDestopItem, fetchurl, ... }:
+## check { config, lib, input, pkgs, makeDestopItem, fetchurl, ... }:
 
 # Enable OpenGL
   hardware.opengl = {
@@ -377,3 +387,44 @@ fonts = {
       };
     };
     };
+
+
+
+
+
+environment.etc = {
+  "xddg/gtk-3.0".source = ./gtk-3.0
+};
+
+
+
+environment {
+  variables = {
+    QT_QPA_PLATFORMTHEME = "qt5ct";
+    QT_QPA_PLATFORM = "xcb obs";
+  };
+};
+
+
+nixpkgs.overlays = [
+(self: super: {
+waybar = super.waybar.overrideAttrs (oldAttrs: {
+  mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true"];
+});
+})
+];
+
+    ########################
+    home.nix
+    ####
+
+{
+    wayland.windowManager.hyprland = {
+    enable = true;
+
+    settings = {
+      "$mod" = "SUPER";
+
+    }
+    };
+    }
