@@ -1,6 +1,9 @@
 ### picom-pijulius
+#####
+To Start Learn:
+https://www.youtube.com/watch?v=S3VBi6kHw5c
 
-
+##############3
 imports = [
   <nixos-hardware/lenovo/thinkpad/p50>
   ./hardware-configuration.nix
