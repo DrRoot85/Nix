@@ -344,24 +344,24 @@ fonts = {
 
 
 
-
+############## DWM -- Work ###################
 
         nixpkgs.overlays = [
 	(final: prev: {
-		dwm = prev.dwm.overrideAttrs (old: { src = /home/dobbie/Suckless/dwm ;});
+		dwm = prev.dwm.overrideAttrs (old: { src = /home/DrRoot/Suckless/dwm ;});
 	})
 	(final: prev: {
-		dmenu = prev.dmenu.overrideAttrs (old: { src = /home/dobbie/Suckless/dmenu ;});
+		dmenu = prev.dmenu.overrideAttrs (old: { src = /home/DrRoot/Suckless/dmenu ;});
 	})
 	(final: prev: {
-		slstatus = prev.slstatus.overrideAttrs (old: { src = /home/dobbie/Suckless/slstatus ;});
+		slstatus = prev.slstatus.overrideAttrs (old: { src = /home/DrRoot/Suckless/slstatus ;});
 	})
 	(final: prev: {
-		slock = prev.slock.overrideAttrs (old: { src = /home/dobbie/Suckless/slock ;});
+		slock = prev.slock.overrideAttrs (old: { src = /home/DrRoot/Suckless/slock ;});
 	})
   ];
 
-
+##########################################3
 
 
 
